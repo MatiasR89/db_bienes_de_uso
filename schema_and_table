@@ -1,0 +1,255 @@
+CREATE SCHEMA bienes_de_uso_jgm DEFAULT CHARACTER SET utf8mb4;
+
+-- Creación de las tablas.
+USE bienes_de_uso_jgm;
+
+-- Tabla: unidad
+CREATE TABLE unidad (
+    id_unidad int NOT NULL,
+    nombre text NOT NULL,
+    nombre_resumido tinytext NOT NULL,
+    CONSTRAINT pk_unidad PRIMARY KEY (id_unidad)
+);
+-- Tabla: ubicacion
+CREATE TABLE ubicacion (
+    id_ubicacion int NOT NULL,
+    id_unidad int NOT NULL, 
+    domicilio varchar(100) NULL,
+    piso int NULL,
+    cod_postal varchar(10) NULL,
+    oficina int NULL,
+    CONSTRAINT pk_ubicacion PRIMARY KEY (id_ubicacion)
+);
+-- Tabla: motivo
+CREATE TABLE motivo (
+    id_motivo int NOT NULL AUTO_INCREMENT,
+    desc_motivo tinytext NOT NULL, 
+    CONSTRAINT pk_motivo PRIMARY KEY (id_motivo)
+);
+-- Tabla: estado_solicitud
+CREATE TABLE estado_solicitud (
+    id_estado_solicit int NOT NULL AUTO_INCREMENT,
+    desc_estado_solicit tinytext NOT NULL,
+    CONSTRAINT pk_estado_solict PRIMARY KEY (id_estado_solicit)
+);
+-- Tabla: solicitud
+CREATE TABLE solicitud (
+    id_solicitud int NOT NULL AUTO_INCREMENT,
+    id_ubicacion int NOT NULL, 
+    id_motivo int NOT NULL,
+    id_estado_solicit int NOT NULL,
+    id_item varchar(30) NOT NULL,
+    cantidad int NOT NULL,
+    descripcion varchar(500) NULL,
+    urgencia binary NOT NULL,
+    fecha_solicitud date NOT NULL,
+    fecha_cierre date NULL,
+    pac binary NOT NULL,
+    valor_presupuestado decimal(20,2) NOT NULL,
+    CONSTRAINT pk_solicitud PRIMARY KEY (id_solicitud)
+);
+ -- Tabla: movimiento 
+CREATE TABLE movimiento (
+    id_movimiento int NOT NULL AUTO_INCREMENT,
+    id_inventario int NOT NULL, 
+    id_solicitud int NULL,
+    numero_legajo int NOT NULL,
+    id_tipo_movimiento int NOT NULL,
+    fecha_inicio date NOT NULL,
+    fecha_fin date NULL,
+    id_fin_movimiento int NULL,
+    CONSTRAINT pk_movimiento PRIMARY KEY (id_movimiento)
+);
+-- Tabla: empleados
+CREATE TABLE empleados (
+    numero_legajo int NOT NULL,
+    dni int NOT NULL, 
+    nombre text NOT NULL,
+    segundo_nombre text NULL,
+    apellido text NOT NULL,
+    segundo_apellido text NULL,
+    email varchar(50) NULL,
+    es_supervisor binary NOT NULL,
+    CONSTRAINT pk_numero_legajo PRIMARY KEY (numero_legajo)
+);
+
+-- Tabla: tipo_movimiento
+CREATE TABLE tipo_movimiento (
+    id_tipo_movimiento int NOT NULL AUTO_INCREMENT,
+    desc_tipo_movimiento tinytext NOT NULL, 
+    CONSTRAINT pk_tipo_movimiento PRIMARY KEY (id_tipo_movimiento)
+);
+-- Tabla: fin_movimiento
+CREATE TABLE fin_movimiento (
+    id_fin_movimiento int NOT NULL AUTO_INCREMENT,
+    desc_fin_movimiento tinytext NOT NULL, 
+    CONSTRAINT pk_fin_movimiento PRIMARY KEY (id_fin_movimiento)
+);
+-- Tabla: bienes_de_uso 
+CREATE TABLE bienes_de_uso (
+    id_inventario int NOT NULL AUTO_INCREMENT,
+    id_catalogo varchar(30) NOT NULL,
+    marca varchar(50) NULL,
+    modelo varchar(100) NULL,
+    numero_de_serie varchar(30) NULL,
+    fecha_alta date NOT NULL,
+    id_estado_bien int NOT NULL,
+    fecha_baja date NULL,
+    id_motivo_baja int NULL,
+    numero_oc varchar(30) NULL,
+    id_proveedor int NULL,
+    valor_adquisicion decimal(20,2) NOT NULL,
+    valor_en_modulos decimal(10,2) NOT NULL,
+    CONSTRAINT pk_inventario PRIMARY KEY (id_inventario)
+);
+-- Tabla: estado_bien
+CREATE TABLE estado_bien (
+    id_estado_bien int NOT NULL AUTO_INCREMENT,
+    desc_estado_bien tinytext NOT NULL, 
+    CONSTRAINT pk_estado_bien PRIMARY KEY (id_estado_bien)
+);
+-- Tabla: motivo_baja
+CREATE TABLE motivo_baja (
+    id_motivo_baja int NOT NULL AUTO_INCREMENT,
+    desc_motivo_baja tinytext NOT NULL, 
+    CONSTRAINT pk_motivo_baja PRIMARY KEY (id_motivo_baja)
+);
+-- Tabla: proveedores
+CREATE TABLE proveedores (
+    id_proveedor int NOT NULL,
+    razon_social varchar(200) NOT NULL, 
+    cuit int NOT NULL,
+    CONSTRAINT pk_proveedor PRIMARY KEY (id_proveedor)
+);
+-- Tabla: catalogo
+CREATE TABLE catalogo (
+    id_catalogo varchar(30) NOT NULL,
+    id_item varchar(20) NOT NULL, 
+    desc_catalogo varchar(500) NOT NULL, 
+    CONSTRAINT pk_catalogo PRIMARY KEY (id_catalogo)
+);
+-- Tabla: item
+CREATE TABLE item (
+    id_item varchar(20) NOT NULL,
+    id_objeto_del_gasto varchar(5) NOT NULL, 
+    desc_item varchar(50) NOT NULL, 
+    años_amortizacion int NOT NULL,
+    CONSTRAINT pk_item PRIMARY KEY (id_item)
+);
+-- Tabla: objeto_del_gasto
+CREATE TABLE objeto_del_gasto (
+    id_objeto_del_gasto varchar(5) NOT NULL, 
+    desc_objeto_del_gasto varchar(50) NOT NULL, 
+    CONSTRAINT pk_objeto_del_gasto PRIMARY KEY (id_objeto_del_gasto)
+);
+-- Tabla: depreciacion
+CREATE TABLE depreciacion (
+    id_asiento int NOT NULL AUTO_INCREMENT,
+    id_inventario int NOT NULL, 
+    años_asiento date NOT NULL,
+    depreciacion_del_periodo decimal(20,2) NULL,
+    depreciacion_acumulada decimal(20,2) NULL,
+    valor_residual decimal(20,2) NULL,
+    CONSTRAINT pk_asiento PRIMARY KEY (id_asiento)
+);
+-- Asignacion de las foreign keys
+-- Foreign key: Ubicacion
+-- Referencia: fk_ubicacion_unidad (tabla hijo: ubicación; tabla padre: unidad)
+ALTER TABLE ubicacion ADD CONSTRAINT fk_ubicacion_unidad FOREIGN KEY (id_unidad)
+    REFERENCES unidad (id_unidad)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;	
+
+-- Foreign key: Solicitud
+-- Referencia: fk_solicitud_ubicacion (tabla hijo: solicitud; tabla padre: ubicacion)
+ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_ubicacion FOREIGN KEY (id_ubicacion)
+    REFERENCES ubicacion (id_ubicacion)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;	
+
+-- Referencia: fk_solicitud_motivo (tabla hijo: solicitud; tabla padre: motivo)
+ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_motivo FOREIGN KEY motivo (id_motivo)
+    REFERENCES motivo (id_motivo)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;	
+-- Referencia: fk_solicitud_estado_avance (tabla hijo: solicitud; tabla padre: estado_solicitud)
+ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_estado_avance FOREIGN KEY (id_estado_solicit)
+    REFERENCES estado_solicitud (id_estado_solicit)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;	
+-- Referencia: fk_solicitud_item (tabla hijo: solicitud; tabla padre: item)
+ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_item FOREIGN KEY (id_item)
+    REFERENCES item (id_item)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+	
+-- Foreign key: Movimiento
+-- Referencia: fk_movimiento_bien (tabla hijo: movimiento; tabla padre: bienes_de_uso)
+ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_bien FOREIGN KEY (id_inventario)
+    REFERENCES bienes_de_uso (id_inventario)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;	
+-- Referencia: fk_movimiento_solicitud (tabla hijo: movimiento; tabla padre: solicitud)
+ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_solicitud FOREIGN KEY (id_solicitud)
+    REFERENCES solicitud (id_solicitud)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;	
+-- Referencia: fk_movimiento_empleado (tabla hijo: movimiento; tabla padre: empleados)
+ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_empleado FOREIGN KEY (numero_legajo)
+    REFERENCES empleados (numero_legajo)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+
+-- Referencia: fk_movimiento_tipo (tabla hijo: movimiento; tabla padre: tipo_movimiento)
+ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_tipo FOREIGN KEY (id_tipo_movimiento)
+    REFERENCES tipo_movimiento (id_tipo_movimiento)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+-- Referencia: fk_movimiento_fin (tabla hijo: movimiento; tabla padre: fin_movimiento)
+ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_fin FOREIGN KEY (id_fin_movimiento)
+    REFERENCES fin_movimiento (id_fin_movimiento)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+-- Foreign key: Bienes de Uso
+-- Referencia: fk_bien_catalogo (tabla hijo: bienes_de_uso; tabla padre: catalogo)
+ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_catalogo FOREIGN KEY (id_catalogo)
+    REFERENCES catalogo (id_catalogo)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+-- Referencia: fk_bien_estado (tabla hijo: bienes_de_uso; tabla padre: estado_bien)
+ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_estado FOREIGN KEY (id_estado_bien)
+    REFERENCES estado_bien (id_estado_bien)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+-- Referencia: fk_bien_baja (tabla hijo: bienes_de_uso; tabla padre: motivo_baja)
+ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_baja FOREIGN KEY (id_motivo_baja)
+    REFERENCES motivo_baja (id_motivo_baja)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+-- Referencia: fk_bien_proveedor (tabla hijo: bienes_de_uso; tabla padre: proveedores)
+ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_proveedor FOREIGN KEY (id_proveedor)
+    REFERENCES proveedores (id_proveedor)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+-- Foreign key: Catalogo
+-- Referencia: fk_catalogo_item (tabla hijo: catalogo; tabla padre: item)
+ALTER TABLE catalogo ADD CONSTRAINT fk_catalogo_item FOREIGN KEY (id_item)
+    REFERENCES item (id_item)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+
+-- Foreign key: Item
+-- Referencia: fk_item_objeto_gasto (tabla hijo: item; tabla padre: objeto_del_gasto)
+ALTER TABLE item ADD CONSTRAINT fk_item_objeto_gasto FOREIGN KEY (id_objeto_del_gasto)
+    REFERENCES objeto_del_gasto (id_objeto_del_gasto)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
+
+-- Foreign key: Depreciacion
+-- Referencia: fk_depreciacion_bien (tabla hijo: depreciacion; tabla padre: bienes_de_uso)
+ALTER TABLE depreciacion ADD CONSTRAINT fk_depreciacion_bien FOREIGN KEY (id_inventario)
+    REFERENCES bienes_de_uso (id_inventario)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE;
