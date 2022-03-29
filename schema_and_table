@@ -38,7 +38,10 @@ CREATE TABLE solicitud (
     id_ubicacion int NOT NULL, 
     id_motivo int NOT NULL,
     id_estado_solicit int NOT NULL,
-    id_item varchar(30) NOT NULL,
+    item INT NOT NULL,
+    inciso INT NOT NULL, 
+	partida_principal INT NOT NULL,
+	partida_secundaria INT NULL,
     cantidad int NOT NULL,
     descripcion varchar(500) NULL,
     urgencia binary NOT NULL,
@@ -88,7 +91,11 @@ CREATE TABLE fin_movimiento (
 -- Tabla: bienes_de_uso 
 CREATE TABLE bienes_de_uso (
     id_inventario int NOT NULL AUTO_INCREMENT,
-    id_catalogo varchar(30) NOT NULL,
+    catalogo int NOT NULL,
+    item INT NOT NULL,
+    inciso INT NOT NULL, 
+	partida_principal INT NOT NULL,
+	partida_secundaria INT NULL,
     marca varchar(50) NULL,
     modelo varchar(100) NULL,
     numero_de_serie varchar(30) NULL,
@@ -123,25 +130,35 @@ CREATE TABLE proveedores (
 );
 -- Tabla: catalogo
 CREATE TABLE catalogo (
-    id_catalogo varchar(30) NOT NULL,
-    id_item varchar(20) NOT NULL, 
+    catalogo INT NOT NULL,
+    item INT NOT NULL,
+    inciso INT NOT NULL, 
+	partida_principal INT NOT NULL,
+	partida_secundaria INT NOT NULL, 
     desc_catalogo varchar(500) NOT NULL, 
-    CONSTRAINT pk_catalogo PRIMARY KEY (id_catalogo)
+    CONSTRAINT pk_catalogo PRIMARY KEY (inciso, partida_principal, partida_secundaria, item, catalogo)
 );
+
 -- Tabla: item
 CREATE TABLE item (
-    id_item varchar(20) NOT NULL,
-    id_objeto_del_gasto varchar(5) NOT NULL, 
+    item INT NOT NULL,
+    inciso INT NOT NULL, 
+	partida_principal INT NOT NULL,
+	partida_secundaria INT NOT NULL, 
     desc_item varchar(50) NOT NULL, 
     años_amortizacion int NOT NULL,
-    CONSTRAINT pk_item PRIMARY KEY (id_item)
+    CONSTRAINT pk_item PRIMARY KEY (inciso, partida_principal, partida_secundaria,item)
 );
+
 -- Tabla: objeto_del_gasto
 CREATE TABLE objeto_del_gasto (
-    id_objeto_del_gasto varchar(5) NOT NULL, 
+	inciso INT NOT NULL, 
+	partida_principal INT NOT NULL,
+	partida_secundaria INT NOT NULL,
     desc_objeto_del_gasto varchar(50) NOT NULL, 
-    CONSTRAINT pk_objeto_del_gasto PRIMARY KEY (id_objeto_del_gasto)
+    CONSTRAINT pk_objeto_del_gasto PRIMARY KEY (inciso, partida_principal, partida_secundaria)
 );
+
 -- Tabla: depreciacion
 CREATE TABLE depreciacion (
     id_asiento int NOT NULL AUTO_INCREMENT,
@@ -178,8 +195,8 @@ ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_estado_avance FOREIGN KEY (id_
     ON DELETE CASCADE
     ON UPDATE CASCADE;	
 -- Referencia: fk_solicitud_item (tabla hijo: solicitud; tabla padre: item)
-ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_item FOREIGN KEY (id_item)
-    REFERENCES item (id_item)
+ALTER TABLE solicitud ADD CONSTRAINT fk_solicitud_item FOREIGN KEY (inciso, partida_principal, partida_secundaria, item)
+    REFERENCES item (inciso, partida_principal, partida_secundaria, item)
     ON DELETE NO ACTION
     ON UPDATE CASCADE;
 	
@@ -213,8 +230,8 @@ ALTER TABLE movimiento ADD CONSTRAINT fk_movimiento_fin FOREIGN KEY (id_fin_movi
 
 -- Foreign key: Bienes de Uso
 -- Referencia: fk_bien_catalogo (tabla hijo: bienes_de_uso; tabla padre: catalogo)
-ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_catalogo FOREIGN KEY (id_catalogo)
-    REFERENCES catalogo (id_catalogo)
+ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_catalogo FOREIGN KEY (inciso, partida_principal, partida_secundaria, item, catalogo)
+    REFERENCES catalogo (inciso, partida_principal, partida_secundaria, item, catalogo)
     ON DELETE NO ACTION
     ON UPDATE CASCADE;
 -- Referencia: fk_bien_estado (tabla hijo: bienes_de_uso; tabla padre: estado_bien)
@@ -235,15 +252,15 @@ ALTER TABLE bienes_de_uso ADD CONSTRAINT fk_bien_proveedor FOREIGN KEY (id_prove
 
 -- Foreign key: Catalogo
 -- Referencia: fk_catalogo_item (tabla hijo: catalogo; tabla padre: item)
-ALTER TABLE catalogo ADD CONSTRAINT fk_catalogo_item FOREIGN KEY (id_item)
-    REFERENCES item (id_item)
+ALTER TABLE catalogo ADD CONSTRAINT fk_catalogo_item FOREIGN KEY (inciso, partida_principal, partida_secundaria, item)
+    REFERENCES item (inciso, partida_principal, partida_secundaria, item)
     ON DELETE NO ACTION
     ON UPDATE CASCADE;
 
 -- Foreign key: Item
 -- Referencia: fk_item_objeto_gasto (tabla hijo: item; tabla padre: objeto_del_gasto)
-ALTER TABLE item ADD CONSTRAINT fk_item_objeto_gasto FOREIGN KEY (id_objeto_del_gasto)
-    REFERENCES objeto_del_gasto (id_objeto_del_gasto)
+ALTER TABLE item ADD CONSTRAINT fk_item_objeto_gasto FOREIGN KEY (inciso, partida_principal, partida_secundaria)
+    REFERENCES objeto_del_gasto (inciso, partida_principal, partida_secundaria)
     ON DELETE NO ACTION
     ON UPDATE CASCADE;
 
