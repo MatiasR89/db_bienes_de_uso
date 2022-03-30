@@ -146,7 +146,7 @@ CREATE TABLE item (
     partida_principal INT NOT NULL,
     partida_secundaria INT NOT NULL, 
     desc_item varchar(50) NOT NULL, 
-    años_amortizacion int NOT NULL,
+    años_amortizacion INT NOT NULL,
     CONSTRAINT pk_item PRIMARY KEY (inciso, partida_principal, partida_secundaria,item)
 );
 
@@ -162,11 +162,11 @@ CREATE TABLE objeto_del_gasto (
 -- Tabla: depreciacion
 CREATE TABLE depreciacion (
     id_asiento int NOT NULL AUTO_INCREMENT,
-    id_inventario int NOT NULL, 
+    id_inventario INT NOT NULL, 
     años_asiento date NOT NULL,
-    depreciacion_del_periodo decimal(20,2) NULL,
-    depreciacion_acumulada decimal(20,2) NULL,
-    valor_residual decimal(20,2) NULL,
+    depreciacion_del_periodo DECIMAL(20,2) NULL,
+    depreciacion_acumulada DECIMAL(20,2) NULL,
+    valor_residual DECIMAL(20,2) NULL,
     CONSTRAINT pk_asiento PRIMARY KEY (id_asiento)
 );
 -- Asignacion de las foreign keys
