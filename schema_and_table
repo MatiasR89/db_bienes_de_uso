@@ -40,8 +40,8 @@ CREATE TABLE solicitud (
     id_estado_solicit int NOT NULL,
     item INT NOT NULL,
     inciso INT NOT NULL, 
-	partida_principal INT NOT NULL,
-	partida_secundaria INT NULL,
+    partida_principal INT NOT NULL,
+    partida_secundaria INT NOT NULL,
     cantidad INT NOT NULL,
     descripcion VARCHAR(500) NULL,
     urgencia BINARY NOT NULL,
@@ -94,8 +94,8 @@ CREATE TABLE bienes_de_uso (
     catalogo INT NOT NULL,
     item INT NOT NULL,
     inciso INT NOT NULL, 
-	partida_principal INT NOT NULL,
-	partida_secundaria INT NULL,
+    partida_principal INT NOT NULL,
+    partida_secundaria INT NOT NULL,
     marca VARCHAR(50) NULL,
     modelo VARCHAR(100) NULL,
     numero_de_serie VARCHAR(30) NULL,
@@ -133,8 +133,8 @@ CREATE TABLE catalogo (
     catalogo INT NOT NULL,
     item INT NOT NULL,
     inciso INT NOT NULL, 
-	partida_principal INT NOT NULL,
-	partida_secundaria INT NOT NULL, 
+    partida_principal INT NOT NULL,
+    partida_secundaria INT NOT NULL, 
     desc_catalogo VARCHAR(500) NOT NULL, 
     CONSTRAINT pk_catalogo PRIMARY KEY (inciso, partida_principal, partida_secundaria, item, catalogo)
 );
@@ -143,8 +143,8 @@ CREATE TABLE catalogo (
 CREATE TABLE item (
     item INT NOT NULL,
     inciso INT NOT NULL, 
-	partida_principal INT NOT NULL,
-	partida_secundaria INT NOT NULL, 
+    partida_principal INT NOT NULL,
+    partida_secundaria INT NOT NULL, 
     desc_item VARCHAR(50) NOT NULL, 
     años_amortizacion int NOT NULL,
     CONSTRAINT pk_item PRIMARY KEY (inciso, partida_principal, partida_secundaria,item)
@@ -152,9 +152,9 @@ CREATE TABLE item (
 
 -- Tabla: objeto_del_gasto
 CREATE TABLE objeto_del_gasto (
-	inciso INT NOT NULL, 
-	partida_principal INT NOT NULL,
-	partida_secundaria INT NOT NULL,
+    inciso INT NOT NULL, 
+    partida_principal INT NOT NULL,
+    partida_secundaria INT NOT NULL,
     desc_objeto_del_gasto VARCHAR(50) NOT NULL, 
     CONSTRAINT pk_objeto_del_gasto PRIMARY KEY (inciso, partida_principal, partida_secundaria)
 );
